@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>ceshi</title>
+    <url>/2021/02/03/ceshi/</url>
+    <content><![CDATA[<p><img src="/mbaTao.github.io/2021/02/03/ceshi/aaa.jpg" alt="121"></p>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2021/02/03/hello-world/</url>
+    <content><![CDATA[<p>##关于如何打包XCFramework，并使用swift pakcage manager 分发</p>
+<p>####今天想把自己经常使用的swift工具类进行封装，打包成framework，发现了一个问题<br>自己的工具类中有Objective-C文件，那么抽离这些工具类的时候，没办法直接使用这些oc类(大佬们写的库没有把握重写不出问题)，得借助项目中的桥接文件BridgeFile进行声明后才能使用，太麻烦</p>
+<p>于是有缘看到这篇文章，<a href>https://www.jianshu.com/p/1fcdd3e3fc2b</a>，就跟着做了一天，并最终完成制作，其中很多坑，让我慢慢道来</p>
+<p>个人总结出大致步骤如下：<br>1.新建一个Framwork工程<br>2.设置Targets -&gt; Build Settings -&gt; Build Libraries for Distribution 为YES<br>3.添加进你需要打包的文件后，添加需要公开的.h文件到Targets -&gt; Build Phasses -&gt; Headers里（细节：要包含你框架的.h默认文件，不要删除），且在框架.h文件中说明</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#import &lt;你的框架名&#x2F;需要公开文件的.h&gt;</span><br></pre></td></tr></table></figure>
+<p>4.依次执行以下命令,为targets归档框架。注：命令中我使用了”你的框架名”,请自行替换</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xcodebuild archive \</span><br><span class="line">-scheme 你的框架名 \</span><br><span class="line">-configuration Release \</span><br><span class="line">-destination &#39;generic&#x2F;platform&#x3D;iOS&#39; \</span><br><span class="line">-archivePath &#39;.&#x2F;build&#x2F;你的框架名-iphoneos.xcarchive&#39; \</span><br><span class="line">SKIP_INSTALL&#x3D;NO \</span><br><span class="line">BUILD_LIBRARIES_FOR_DISTRIBUTION&#x3D;YES</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xcodebuild archive \</span><br><span class="line">-scheme 你的框架名 \</span><br><span class="line">-configuration Release \</span><br><span class="line">-destination &#39;generic&#x2F;platform&#x3D;iOS Simulator&#39; \</span><br><span class="line">-archivePath &#39;.&#x2F;build&#x2F;你的框架名.framework-iphonesimulator.xcarchive&#39; \</span><br><span class="line">SKIP_INSTALL&#x3D;NO \</span><br><span class="line">BUILD_LIBRARIES_FOR_DISTRIBUTION&#x3D;YES</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xcodebuild archive \</span><br><span class="line">-scheme 你的框架名 \</span><br><span class="line">-configuration Release \</span><br><span class="line">-destination &#39;platform&#x3D;macOS,arch&#x3D;x86_64,variant&#x3D;Mac Catalyst&#39; \</span><br><span class="line">-archivePath &#39;.&#x2F;build&#x2F;你的框架名.framework-catalyst.xcarchive&#39; \</span><br><span class="line">SKIP_INSTALL&#x3D;NO \</span><br><span class="line">BUILD_LIBRARIES_FOR_DISTRIBUTION&#x3D;YES</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xcodebuild -create-xcframework \</span><br><span class="line">-framework &#39;.&#x2F;build&#x2F;你的框架名.framework-iphonesimulator.xcarchive&#x2F;Products&#x2F;Library&#x2F;Frameworks&#x2F;你的框架名.framework&#39; \</span><br><span class="line">-framework &#39;.&#x2F;build&#x2F;你的框架名.framework-iphoneos.xcarchive&#x2F;Products&#x2F;Library&#x2F;Frameworks&#x2F;你的框架名.framework&#39; \</span><br><span class="line">-framework &#39;.&#x2F;build&#x2F;你的框架名.framework-catalyst.xcarchive&#x2F;Products&#x2F;Library&#x2F;Frameworks&#x2F;你的框架名.framework&#39; \</span><br><span class="line">-output &#39;.&#x2F;build&#x2F;你的框架名.xcframework&#39;</span><br></pre></td></tr></table></figure>
+<p>5.一切顺利的话，终端中没有任何报错的话，恭喜你，你应该在项目根目录里看到了一个build文件夹,且看到了你的框架名.xcframework文件夹和三个.xcarchive归档文件</p>
+<p>####截止当前，你已经可以手动拖动这个framework到你的项目中了,Build Success! Happy！，想了解如何用Swift Package Manager分发的，请继续往下看</p>
+<p>1.打开Xcode 点击工具栏File -&gt; New -&gt;  Swift Package Manager 新建package 工程<br>2.新建一个git，提供给你自己的库使用<br>3.编辑Package.swift文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let package &#x3D; Package(</span><br><span class="line">    name: &quot;你的框架名&quot;,</span><br><span class="line">    platforms: [</span><br><span class="line">      .macOS(.v10_15), .iOS(.v14), .tvOS(.v14)</span><br><span class="line">    ],</span><br><span class="line">    products: [</span><br><span class="line">        &#x2F;&#x2F; Products define the executables and libraries a package produces, and make them visible to other packages.</span><br><span class="line">        .library(</span><br><span class="line">            name: &quot;你的框架名&quot;,</span><br><span class="line">            targets: [&quot;你的框架名&quot;]),</span><br><span class="line">    ],</span><br><span class="line">    dependencies: [</span><br><span class="line">        &#x2F;&#x2F; Dependencies declare other packages that this package depends on.</span><br><span class="line">        &#x2F;&#x2F; .package(url: &#x2F;* package url *&#x2F;, from: &quot;1.0.0&quot;),</span><br><span class="line">    ],</span><br><span class="line">    targets: [</span><br><span class="line">        .binaryTarget(</span><br><span class="line">           name: &quot;你的框架名&quot;,</span><br><span class="line">           path: &quot;.&#x2F;Sources&#x2F;你的框架名.xcframework&quot;)</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>4.将你刚才打包好的xcframework文件，拖入到source中，没错，source中只有这一个文件<br>5.使用XCode的git，进行commit ，tag(以1.0.0为格式递增最后一位比如下一版本1.0.1)，最终点击push，打完收工</p>
+<p>####激动人心的时刻到了，点击工具栏,File -&gt; Swift Packages -&gt; Add Package Dependency,输入你的git地址，点击Next，Next,最终无报错点击Finish，到此为止，发布和使用Swift Package Manager完成！</p>
+<p>再次感谢这篇文章<a href="https://www.jianshu.com/p/1fcdd3e3fc2b">https://www.jianshu.com/p/1fcdd3e3fc2b</a> 和作者: 刀客传奇，受益匪浅<br>文章中可能会有很多不足之处，还望大家指点出来，会积极改进！谢谢!</p>
+<p><img src="/mbaTao.github.io/2021/02/03/hello-world/1612348392871.jpg"></p>
+]]></content>
+  </entry>
+</search>

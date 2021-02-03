@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+   
+  <meta name="keywords" content="潇洒哥,imbatao" />
+   
+  <meta name="description" content="iOS" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+     我叫潇洒哥
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      
+
+
+
+<!-- Subtitle -->
+
+<div id="main">
+  <section class="outer">
+  
+  
+  <article class="articles">
+    
+    
+    
+    
+    <article
+  id="post-ceshi"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/02/03/ceshi/"
+    >ceshi</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/03/ceshi/" class="article-date">
+  <time datetime="2021-02-03T10:41:17.000Z" itemprop="datePublished">2021-02-03</time>
+</a>  
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p><img src="/mbaTao.github.io/2021/02/03/ceshi/aaa.jpg" alt="121"></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-hello-world"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+     
+    <div class="article-meta">
+      <a href="/2021/02/03/hello-world/" class="article-date">
+  <time datetime="2021-02-03T01:59:51.170Z" itemprop="datePublished">2021-02-03</time>
+</a>  
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>##关于如何打包XCFramework，并使用swift pakcage manager 分发</p>
+<p>####今天想把自己经常使用的swift工具类进行封装，打包成framework，发现了一个问题<br>自己的工具类中有Objective-C文件，那么抽离这些工具类的时候，没办法直接使用这些oc类(大佬们写的库没有把握重写不出问题)，得借助项目中的桥接文件BridgeFile进行声明后才能使用，太麻烦</p>
+<p>于是有缘看到这篇文章，<a href>https://www.jianshu.com/p/1fcdd3e3fc2b</a>，就跟着做了一天，并最终完成制作，其中很多坑，让我慢慢道来</p>
+<p>个人总结出大致步骤如下：<br>1.新建一个Framwork工程<br>2.设置Targets -&gt; Build Settings -&gt; Build Libraries for Distribution 为YES<br>3.添加进你需要打包的文件后，添加需要公开的.h文件到Targets -&gt; Build Phasses -&gt; Headers里（细节：要包含你框架的.h默认文件，不要删除），且在框架.h文件中说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;你的框架名&#x2F;需要公开文件的.h&gt;</span><br></pre></td></tr></table></figure>
+<p>4.依次执行以下命令,为targets归档框架。注：命令中我使用了”你的框架名”,请自行替换</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">xcodebuild archive \</span><br><span class="line">-scheme 你的框架名 \</span><br><span class="line">-configuration Release \</span><br><span class="line">-destination &#39;generic&#x2F;platform&#x3D;iOS&#39; \</span><br><span class="line">-archivePath &#39;.&#x2F;build&#x2F;你的框架名-iphoneos.xcarchive&#39; \</span><br><span class="line">SKIP_INSTALL&#x3D;NO \</span><br><span class="line">BUILD_LIBRARIES_FOR_DISTRIBUTION&#x3D;YES</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">xcodebuild archive \</span><br><span class="line">-scheme 你的框架名 \</span><br><span class="line">-configuration Release \</span><br><span class="line">-destination &#39;generic&#x2F;platform&#x3D;iOS Simulator&#39; \</span><br><span class="line">-archivePath &#39;.&#x2F;build&#x2F;你的框架名.framework-iphonesimulator.xcarchive&#39; \</span><br><span class="line">SKIP_INSTALL&#x3D;NO \</span><br><span class="line">BUILD_LIBRARIES_FOR_DISTRIBUTION&#x3D;YES</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">xcodebuild archive \</span><br><span class="line">-scheme 你的框架名 \</span><br><span class="line">-configuration Release \</span><br><span class="line">-destination &#39;platform&#x3D;macOS,arch&#x3D;x86_64,variant&#x3D;Mac Catalyst&#39; \</span><br><span class="line">-archivePath &#39;.&#x2F;build&#x2F;你的框架名.framework-catalyst.xcarchive&#39; \</span><br><span class="line">SKIP_INSTALL&#x3D;NO \</span><br><span class="line">BUILD_LIBRARIES_FOR_DISTRIBUTION&#x3D;YES</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">xcodebuild -create-xcframework \</span><br><span class="line">-framework &#39;.&#x2F;build&#x2F;你的框架名.framework-iphonesimulator.xcarchive&#x2F;Products&#x2F;Library&#x2F;Frameworks&#x2F;你的框架名.framework&#39; \</span><br><span class="line">-framework &#39;.&#x2F;build&#x2F;你的框架名.framework-iphoneos.xcarchive&#x2F;Products&#x2F;Library&#x2F;Frameworks&#x2F;你的框架名.framework&#39; \</span><br><span class="line">-framework &#39;.&#x2F;build&#x2F;你的框架名.framework-catalyst.xcarchive&#x2F;Products&#x2F;Library&#x2F;Frameworks&#x2F;你的框架名.framework&#39; \</span><br><span class="line">-output &#39;.&#x2F;build&#x2F;你的框架名.xcframework&#39;</span><br></pre></td></tr></table></figure>
+<p>5.一切顺利的话，终端中没有任何报错的话，恭喜你，你应该在项目根目录里看到了一个build文件夹,且看到了你的框架名.xcframework文件夹和三个.xcarchive归档文件</p>
+<p>####截止当前，你已经可以手动拖动这个framework到你的项目中了,Build Success! Happy！，想了解如何用Swift Package Manager分发的，请继续往下看</p>
+<p>1.打开Xcode 点击工具栏File -&gt; New -&gt;  Swift Package Manager 新建package 工程<br>2.新建一个git，提供给你自己的库使用<br>3.编辑Package.swift文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">let package &#x3D; Package(</span><br><span class="line">    name: &quot;你的框架名&quot;,</span><br><span class="line">    platforms: [</span><br><span class="line">      .macOS(.v10_15), .iOS(.v14), .tvOS(.v14)</span><br><span class="line">    ],</span><br><span class="line">    products: [</span><br><span class="line">        &#x2F;&#x2F; Products define the executables and libraries a package produces, and make them visible to other packages.</span><br><span class="line">        .library(</span><br><span class="line">            name: &quot;你的框架名&quot;,</span><br><span class="line">            targets: [&quot;你的框架名&quot;]),</span><br><span class="line">    ],</span><br><span class="line">    dependencies: [</span><br><span class="line">        &#x2F;&#x2F; Dependencies declare other packages that this package depends on.</span><br><span class="line">        &#x2F;&#x2F; .package(url: &#x2F;* package url *&#x2F;, from: &quot;1.0.0&quot;),</span><br><span class="line">    ],</span><br><span class="line">    targets: [</span><br><span class="line">        .binaryTarget(</span><br><span class="line">           name: &quot;你的框架名&quot;,</span><br><span class="line">           path: &quot;.&#x2F;Sources&#x2F;你的框架名.xcframework&quot;)</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>4.将你刚才打包好的xcframework文件，拖入到source中，没错，source中只有这一个文件<br>5.使用XCode的git，进行commit ，tag(以1.0.0为格式递增最后一位比如下一版本1.0.1)，最终点击push，打完收工</p>
+<p>####激动人心的时刻到了，点击工具栏,File -&gt; Swift Packages -&gt; Add Package Dependency,输入你的git地址，点击Next，Next,最终无报错点击Finish，到此为止，发布和使用Swift Package Manager完成！</p>
+<p>再次感谢这篇文章<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/1fcdd3e3fc2b">https://www.jianshu.com/p/1fcdd3e3fc2b</a> 和作者: 刀客传奇，受益匪浅<br>文章中可能会有很多不足之处，还望大家指点出来，会积极改进！谢谢!</p>
+<p><img src="/mbaTao.github.io/2021/02/03/hello-world/1612348392871.jpg"></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+  </article>
+  
+
+  
+</section>
+</div>
+
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> imbatao@outlook.com
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="我叫潇洒哥"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://shenyu-vip.lofter.com">摄影</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+    
+  </div>
+</body>
+
+</html>
